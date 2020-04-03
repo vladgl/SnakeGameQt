@@ -1,22 +1,38 @@
 #include "snake.h"
-
+#include <algorithm>
+#include <set>
+#include <QDebug>
 Snake::Snake(uint16_t fw, uint16_t fh, uint16_t x, uint16_t y) :
     _fw(fw), _fh(fh)
 {
+    _count = _fw*_fh;
     _pos_x.push_back((_fw + x) % _fw);
     _pos_y.push_back((_fh + y) % _fh);
     _direction = TOP;
     _flag_GenTail = true;
     _flag_ChangeDir = false;
+    _flag_Win = false;
     genFood();
     std::srand(std::time(nullptr));
 }
 
+void Snake::resetGame()
+{
+    uint16_t x = _pos_x[0], y = _pos_y[0];
+    _pos_x.clear();
+    _pos_y.clear();
+    _pos_x.push_back(x);
+    _pos_y.push_back(y);
+    _flag_GenTail = true;
+    _flag_ChangeDir = false;
+    _flag_Win = false;
+    genFood();
+}
 
 void Snake::genFood()
 {
     // simple food generetion
-/*    bool not_in = true;
+    bool not_in = true;
     for(size_t i = 0; i < 3; ++i)
     {
         not_in = true;
@@ -32,27 +48,34 @@ void Snake::genFood()
         }
         if(not_in)
             return;
-    }*/
+    }
     // in bad case
     std::vector<Point> empty_space;
-    for(uint16_t i = 0; i < _fw; ++i)
+    std::set<size_t> remove_id;
+    for(uint16_t j = 0; j < _fh; ++j)
     {
-        for(uint16_t j = 0; j < _fh; ++j)
+        for(uint16_t i = 0; i < _fw; ++i)
         {
             empty_space.push_back(Point(i, j));
         }
-        for(int i = _pos_x.size() - 1; i >= 0; --i)
-        {
-            empty_space.erase(empty_space.begin() + _pos_x[i] + _pos_y[i]*_fw);
-        }
-        if(empty_space.size() != 0)
-        {
-            uint16_t index = rand() % empty_space.size();
-            _food_x = empty_space[index].x;
-            _food_y = empty_space[index].y;
-        }
+    }
+    for(uint16_t i = 0; i < _pos_x.size(); ++i)
+    {
+        remove_id.insert(_pos_x[i] + _pos_y[i]*_fw);
+    }
+    for(auto it = remove_id.rbegin(); it != remove_id.rend(); ++it)
+    {
+        empty_space.erase(empty_space.begin() + (*it));
+    }
+
+    if(empty_space.size() != 0)
+    {
+        uint16_t index = rand() % empty_space.size();
+        _food_x = empty_space[index].x;
+        _food_y = empty_space[index].y;
     }
 }
+
 
 bool Snake::nextStep()
 {
@@ -95,17 +118,27 @@ bool Snake::nextStep()
         break;
     }
 
+    //collision
     for(size_t i = 1; i < _pos_x.size(); ++i)
     {
         if(_pos_x[0] == _pos_x[i] && _pos_y[0] == _pos_y[i])
             return false;
     }
 
+    //snake ate food
     if(_pos_x[0] == _food_x && _pos_y[0] == _food_y)
     {
         genTail();
         genFood();
     }
+
+    //win
+    if(_pos_x.size() == _count)
+    {
+        _flag_Win = true;
+        return false;
+    }
+
 
     return true;
 }

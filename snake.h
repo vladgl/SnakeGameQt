@@ -71,17 +71,23 @@ public:
         std::srand(seed);
     }
 
+    bool isWin()
+    {
+        return _flag_Win;
+    }
+
+    void resetGame();
     bool checkCollision(uint16_t x, uint16_t y);
 private:
     //!size of the field
-    uint16_t _fw, _fh, _tail_x, _tail_y, _food_x, _food_y;
+    uint16_t _fw, _fh, _count, _tail_x, _tail_y, _food_x, _food_y;
     //!direction
     Direction _direction, _new_direction;
     //! positions (DOP)
     std::vector<uint16_t> _pos_x;
     std::vector<uint16_t> _pos_y;
 
-    bool _flag_GenTail, _flag_ChangeDir;
+    bool _flag_GenTail, _flag_ChangeDir, _flag_Win;
 };
 
 #endif // SNAKE_H

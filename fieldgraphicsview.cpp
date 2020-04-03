@@ -11,15 +11,15 @@ FieldGraphicsView::FieldGraphicsView(QWidget* parent) :
     _delay_epoch = 100;
     _delay_key_press = 0;
 
-    _game_width = 30;
-    _game_height = 50;
+    _game_width = 10;
+    _game_height = 10;
 
     _coef_margin = 1.1f;
     _coef_scale = 10.0f;
 
     /** Create **/
     timer = new QTimer();
-    snake = new Snake(_game_width, _game_height, 10, 10);
+    snake = new Snake(_game_width, _game_height, 9, 0);
 
     s_PlayArea = new QGraphicsScene();
     rect = new QGraphicsRectItem();
@@ -61,31 +61,63 @@ FieldGraphicsView::FieldGraphicsView(QWidget* parent) :
     this->setScene(s_PlayArea);
 
     /** Start **/
+    _flag_DrawState = GAM;
     timer->start(_delay_epoch);
     delay.start();
 }
 
 void FieldGraphicsView::nextEpoch()
 {
-    snake->nextStep();
+    if(!snake->nextStep())
+    {
+        if(!snake->isWin())
+        {
+            snake->resetGame();
+            for(auto el : snakeView)
+                delete el;
+            snakeView.clear();
+            pushSnakePart(snake->at(0), true);
+        }
+        else _flag_DrawState = ViewState::WIN;
+    }
     reDraw();
-
 }
 
 
 void FieldGraphicsView::reDraw()
 {
-    itm_food->setPos(snake->getFood().x*_coef_scale,
-                     snake->getFood().y*_coef_scale);
-    for(size_t i = 0; i<snakeView.size(); ++i)
+    switch(_flag_DrawState)
     {
-        snakeView[i]->setPos(snake->at(i).x*_coef_scale, snake->at(i).y*_coef_scale);
-    }
+    case ViewState::GAM:
+        itm_food->setPos(snake->getFood().x*_coef_scale,
+                         snake->getFood().y*_coef_scale);
+        for(size_t i = 0; i<snakeView.size(); ++i)
+        {
+            snakeView[i]->setPos(snake->at(i).x*_coef_scale, snake->at(i).y*_coef_scale);
+        }
 
-    if(snakeView.size() < snake->size())
-    {
-        for(size_t i = snakeView.size(); i < snake->size(); ++i)
-            pushSnakePart(snake->at(i));
+        if(snakeView.size() < snake->size())
+        {
+            for(size_t i = snakeView.size(); i < snake->size(); ++i)
+                pushSnakePart(snake->at(i));
+        }
+        break;
+    case ViewState::WIN:
+        itm_food->hide();
+
+        if(snakeView.size() == 0)
+            _flag_DrawState = ViewState::WAT;
+        else
+        {
+            delete snakeView[snakeView.size() - 1];
+            snakeView.erase(snakeView.begin() + snakeView.size() - 1);
+        }
+        break;
+
+    case ViewState::WAT:
+
+        break;
+
     }
 }
 

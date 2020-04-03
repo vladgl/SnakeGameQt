@@ -8,6 +8,7 @@
 #include <QList>
 #include <QKeyEvent>
 #include <QTime>
+#include <functional>
 #include "snake.h"
 
 class FieldGraphicsView : public QGraphicsView
@@ -38,6 +39,7 @@ protected:
         return rect_itm;
     }
 private:
+    enum ViewState { WAT, GAM, WIN, LOS };
     QGraphicsScene*    s_PlayArea;
     QGraphicsRectItem *rect, *itm_food;
     QTimer* timer;
@@ -50,6 +52,8 @@ private:
     uint16_t _delay_epoch, _delay_key_press;
 
     QList<QGraphicsRectItem*> snakeView;
+
+    ViewState _flag_DrawState;
 };
 
 #endif // FIELDGRAPHICSVIEW_H
