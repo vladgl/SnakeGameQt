@@ -20,6 +20,15 @@ public slots:
     void nextEpoch();
 
 protected:
+
+    bool hasHeightForWidth() const override
+    {
+        return true;
+    }
+    int heightForWidth(int w) const override
+    {
+        return w;
+    }
     void resizeEvent(QResizeEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
     void reDraw();
@@ -32,7 +41,7 @@ protected:
         if(head)
             rect_itm->setBrush(QBrush(QColor(200, 180, 180)));
         else
-            rect_itm->setBrush(QBrush(QColor(130, 180, 130)));
+            rect_itm->setBrush(QBrush(QColor(145, 162, 0)));
         rect_itm->setPen(QPen(Qt::PenStyle::NoPen));
         s_PlayArea->addItem(rect_itm);
         snakeView.push_back(rect_itm);

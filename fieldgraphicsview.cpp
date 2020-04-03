@@ -1,7 +1,12 @@
 #include "fieldgraphicsview.h"
+
+/** Color scheme: https://colorscheme.ru/#3i409w0w0w0w0"*/
 FieldGraphicsView::FieldGraphicsView(QWidget* parent) :
     QGraphicsView(parent)
 {
+    QSizePolicy size_policy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    size_policy.setHeightForWidth(true);
+    this->setSizePolicy(size_policy);
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->setAlignment(Qt::AlignCenter);
@@ -11,10 +16,10 @@ FieldGraphicsView::FieldGraphicsView(QWidget* parent) :
     _delay_epoch = 100;
     _delay_key_press = 0;
 
-    _game_width = 10;
-    _game_height = 10;
+    _game_width = 50;
+    _game_height = 50;
 
-    _coef_margin = 1.1f;
+    _coef_margin = 1.05f;
     _coef_scale = 10.0f;
 
     /** Create **/
@@ -26,15 +31,15 @@ FieldGraphicsView::FieldGraphicsView(QWidget* parent) :
     itm_food = new QGraphicsRectItem();
 
     /** Setup **/
-    this->setBackgroundBrush(QBrush(QColor(100, 100, 150)));
-    s_PlayArea->setBackgroundBrush(QBrush(QColor(100, 200, 150)));
+    this->setBackgroundBrush(QBrush(QColor(0, 99, 99)));
+    s_PlayArea->setBackgroundBrush(QBrush(QColor(0, 99, 99)));
 
-    QPen pen(QColor(0, 0, 0));
+    QPen pen(QColor(166, 75, 0));
     pen.setWidth(1);
     rect->setPen(pen);
 
     itm_food->setPen(Qt::PenStyle::NoPen);
-    itm_food->setBrush(QBrush(QColor(150, 150, 100)));
+    itm_food->setBrush(QBrush(QColor(90, 1, 109)));
 
     s_PlayArea->setSceneRect(0, 0,
                              _game_width*_coef_scale,
