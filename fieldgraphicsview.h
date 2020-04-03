@@ -1,0 +1,55 @@
+#ifndef FIELDGRAPHICSVIEW_H
+#define FIELDGRAPHICSVIEW_H
+#include <QGraphicsView>
+#include <QGraphicsScene>
+#include <QGraphicsRectItem>
+#include <QWidget>
+#include <QTimer>
+#include <QList>
+#include <QKeyEvent>
+#include <QTime>
+#include "snake.h"
+
+class FieldGraphicsView : public QGraphicsView
+{
+    Q_OBJECT
+public:
+    FieldGraphicsView(QWidget* parent = nullptr);
+public slots:
+    void nextEpoch();
+
+protected:
+    void resizeEvent(QResizeEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
+    void reDraw();
+    QGraphicsRectItem* pushSnakePart(const Point& pos, bool head = false)
+    {
+        QGraphicsRectItem* rect_itm = new QGraphicsRectItem();
+        rect_itm->setRect(QRectF(0, 0,
+                         _coef_scale, _coef_scale));
+        rect_itm->setPos(pos.x*_coef_scale, pos.y*_coef_scale);
+        if(head)
+            rect_itm->setBrush(QBrush(QColor(200, 180, 180)));
+        else
+            rect_itm->setBrush(QBrush(QColor(130, 180, 130)));
+        rect_itm->setPen(QPen(Qt::PenStyle::NoPen));
+        s_PlayArea->addItem(rect_itm);
+        snakeView.push_back(rect_itm);
+        return rect_itm;
+    }
+private:
+    QGraphicsScene*    s_PlayArea;
+    QGraphicsRectItem *rect, *itm_food;
+    QTimer* timer;
+    Snake* snake;
+
+    uint16_t _game_width, _game_height;
+    float _coef_margin, _coef_scale;
+
+    QTime delay;
+    uint16_t _delay_epoch, _delay_key_press;
+
+    QList<QGraphicsRectItem*> snakeView;
+};
+
+#endif // FIELDGRAPHICSVIEW_H

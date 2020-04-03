@@ -1,0 +1,111 @@
+#include "snake.h"
+
+Snake::Snake(uint16_t fw, uint16_t fh, uint16_t x, uint16_t y) :
+    _fw(fw), _fh(fh)
+{
+    _pos_x.push_back((_fw + x) % _fw);
+    _pos_y.push_back((_fh + y) % _fh);
+    _direction = TOP;
+    _flag_GenTail = true;
+    _flag_ChangeDir = false;
+    genFood();
+    std::srand(std::time(nullptr));
+}
+
+
+void Snake::genFood()
+{
+    // simple food generetion
+/*    bool not_in = true;
+    for(size_t i = 0; i < 3; ++i)
+    {
+        not_in = true;
+        _food_x = std::rand() % _fw;
+        _food_y = std::rand() % _fh;
+        for(size_t i = 0; i < _pos_x.size(); ++i)
+        {
+            if(_pos_x[i] == _food_x && _pos_y[i] == _food_y)
+            {
+                not_in = false;
+                break;
+            }
+        }
+        if(not_in)
+            return;
+    }*/
+    // in bad case
+    std::vector<Point> empty_space;
+    for(uint16_t i = 0; i < _fw; ++i)
+    {
+        for(uint16_t j = 0; j < _fh; ++j)
+        {
+            empty_space.push_back(Point(i, j));
+        }
+        for(int i = _pos_x.size() - 1; i >= 0; --i)
+        {
+            empty_space.erase(empty_space.begin() + _pos_x[i] + _pos_y[i]*_fw);
+        }
+        if(empty_space.size() != 0)
+        {
+            uint16_t index = rand() % empty_space.size();
+            _food_x = empty_space[index].x;
+            _food_y = empty_space[index].y;
+        }
+    }
+}
+
+bool Snake::nextStep()
+{
+    if(_flag_ChangeDir)
+    {
+        if((_direction ^ _new_direction) % 2)
+            _direction = _new_direction;
+        _flag_ChangeDir = false;
+    }
+    if(_flag_GenTail)
+    {
+        _tail_x = _pos_x[_pos_x.size()-1];
+        _tail_y = _pos_y[_pos_y.size()-1];
+    }
+    for(size_t i = _pos_x.size() - 1; i >= 1; --i)
+    {
+        _pos_x[i] = _pos_x[i-1];
+        _pos_y[i] = _pos_y[i-1];
+    }
+
+    if(_flag_GenTail)
+    {
+        _pos_x.push_back(_tail_x);
+        _pos_y.push_back(_tail_y);
+        _flag_GenTail = false;
+    }
+    switch(_direction)
+    {
+    case TOP:
+        _pos_y[0] = (_fh + _pos_y[0] + 1) % _fh;
+        break;
+    case BOT:
+        _pos_y[0] = (_fh + _pos_y[0] - 1) % _fh;
+        break;
+    case LFT:
+        _pos_x[0] = (_fw + _pos_x[0] - 1) % _fw;
+        break;
+    case RHT:
+        _pos_x[0] = (_fw + _pos_x[0] + 1) % _fw;
+        break;
+    }
+
+    for(size_t i = 1; i < _pos_x.size(); ++i)
+    {
+        if(_pos_x[0] == _pos_x[i] && _pos_y[0] == _pos_y[i])
+            return false;
+    }
+
+    if(_pos_x[0] == _food_x && _pos_y[0] == _food_y)
+    {
+        genTail();
+        genFood();
+    }
+
+    return true;
+}
