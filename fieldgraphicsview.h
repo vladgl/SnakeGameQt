@@ -3,6 +3,7 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QGraphicsRectItem>
+#include <QGraphicsSimpleTextItem>
 #include <QWidget>
 #include <QTimer>
 #include <QList>
@@ -51,11 +52,12 @@ private:
     enum ViewState { WAT, GAM, WIN, LOS };
     QGraphicsScene*    s_PlayArea;
     QGraphicsRectItem *rect, *itm_food;
+    QGraphicsSimpleTextItem *itm_score_text;
     QTimer* timer;
     Snake* snake;
 
     uint16_t _game_width, _game_height;
-    float _coef_margin, _coef_scale;
+    float _coef_margin, _coef_scale, _coef_text_scale;
 
     QTime delay;
     uint16_t _delay_epoch, _delay_key_press;

@@ -1,5 +1,5 @@
 #include "fieldgraphicsview.h"
-
+#include <numeric>
 /** Color scheme: https://colorscheme.ru/#3i409w0w0w0w0"*/
 FieldGraphicsView::FieldGraphicsView(QWidget* parent) :
     QGraphicsView(parent)
@@ -20,7 +20,8 @@ FieldGraphicsView::FieldGraphicsView(QWidget* parent) :
     _game_height = 50;
 
     _coef_margin = 1.05f;
-    _coef_scale = 10.0f;
+    _coef_scale = 12.0f;
+    _coef_text_scale = 0.2*_coef_scale;
 
     /** Create **/
     timer = new QTimer();
@@ -29,41 +30,64 @@ FieldGraphicsView::FieldGraphicsView(QWidget* parent) :
     s_PlayArea = new QGraphicsScene();
     rect = new QGraphicsRectItem();
     itm_food = new QGraphicsRectItem();
+    itm_score_text = new QGraphicsSimpleTextItem();
 
     /** Setup **/
     this->setBackgroundBrush(QBrush(QColor(0, 99, 99)));
     s_PlayArea->setBackgroundBrush(QBrush(QColor(0, 99, 99)));
 
     QPen pen(QColor(166, 75, 0));
-    pen.setWidth(1);
+    const double pen_width = 2;
+    pen.setWidth(pen_width);
+    pen.setStyle(Qt::PenStyle::DashLine);
+    pen.setCapStyle(Qt::RoundCap);
+    pen.setJoinStyle(Qt::RoundJoin);
+    pen.setDashPattern({pen_width*2, pen_width*2*1.3});
     rect->setPen(pen);
+    rect->setZValue(std::numeric_limits<qreal>::max());
 
     itm_food->setPen(Qt::PenStyle::NoPen);
     itm_food->setBrush(QBrush(QColor(90, 1, 109)));
+    itm_score_text->setText("Score: 0");
+    itm_score_text->setFont(QFont("Helvetica", 10));
+    itm_score_text->setScale(_coef_text_scale);
+    itm_score_text->setBrush(QBrush(QColor(200*1.2, 180*1.2, 180*1.2)));
 
+/*    s_PlayArea->setSceneRect(0, 0,
+                             _game_width*_coef_scale,
+                             _game_height*_coef_scale);*/
     s_PlayArea->setSceneRect(0, 0,
                              _game_width*_coef_scale,
                              _game_height*_coef_scale);
+
     QRectF rSz(0, 0,
                s_PlayArea->width(),
                s_PlayArea->height());
     rect->setRect(rSz);
-    rect->setPos(0, 0);
 
     itm_food->setRect(0, 0, _coef_scale, _coef_scale);
-    itm_food->setPos(snake->getFood().x * _coef_scale,
-                     snake->getFood().y * _coef_scale);
+
 
     /** Connect **/
     connect(timer, &QTimer::timeout, this, &FieldGraphicsView::nextEpoch);
 
     /** Place **/
-    s_PlayArea->addItem(rect);
-    s_PlayArea->addItem(itm_food);
-
-    pushSnakePart(snake->at(0), true);
 
     this->setScene(s_PlayArea);
+
+    s_PlayArea->addItem(rect);
+    s_PlayArea->addItem(itm_food);
+    s_PlayArea->addItem(itm_score_text);
+
+    rect->setPos(0, 0);
+    itm_food->setPos(snake->getFood().x * _coef_scale,
+                     snake->getFood().y * _coef_scale);
+
+    itm_score_text->setPos(0, -itm_score_text->boundingRect().height()*_coef_text_scale);
+    pushSnakePart(snake->at(0), true);
+
+    _coef_margin = (s_PlayArea->height() +
+                    itm_score_text->boundingRect().height()*_coef_text_scale*2)/s_PlayArea->height();
 
     /** Start **/
     _flag_DrawState = GAM;
@@ -105,6 +129,7 @@ void FieldGraphicsView::reDraw()
         {
             for(size_t i = snakeView.size(); i < snake->size(); ++i)
                 pushSnakePart(snake->at(i));
+            itm_score_text->setText("Score: " + QString::number(snake->size()-2));
         }
         break;
     case ViewState::WIN:
@@ -163,7 +188,9 @@ void FieldGraphicsView::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event)
     QRectF rc = QRectF(0, 0,
-                       rect->rect().width()*_coef_margin,
-                       rect->rect().height()*_coef_margin);
+                       s_PlayArea->width()*_coef_margin,
+                       s_PlayArea->height()*_coef_margin);
+//    itm_score_text->setPos(0, mapToScene(0, 0).y());
     this->fitInView(rc, Qt::KeepAspectRatio);
+    this->centerOn(50, 50);
 }

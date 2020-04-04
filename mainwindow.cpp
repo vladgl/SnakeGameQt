@@ -8,6 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    this->setWindowTitle("Snake");
     this->resize(500, 500);
     v_PlayArea = new FieldGraphicsView();
 
