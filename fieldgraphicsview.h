@@ -40,9 +40,9 @@ protected:
                          _coef_scale, _coef_scale));
         rect_itm->setPos(pos.x*_coef_scale, pos.y*_coef_scale);
         if(head)
-            rect_itm->setBrush(QBrush(QColor(200, 180, 180)));
+            rect_itm->setBrush(QBrush(_clr_head));
         else
-            rect_itm->setBrush(QBrush(QColor(145, 162, 0)));
+            rect_itm->setBrush(QBrush(_clr_tail));
         rect_itm->setPen(QPen(Qt::PenStyle::NoPen));
         s_PlayArea->addItem(rect_itm);
         snakeView.push_back(rect_itm);
@@ -51,7 +51,7 @@ protected:
 private:
     enum ViewState { WAT, GAM, WIN, LOS };
     QGraphicsScene*    s_PlayArea;
-    QGraphicsRectItem *rect, *itm_food;
+    QGraphicsRectItem *rect, *rect_effect, *itm_food, *itm_food_effect;
     QGraphicsSimpleTextItem *itm_score_text;
     QTimer* timer;
     Snake* snake;
@@ -65,6 +65,8 @@ private:
     QList<QGraphicsRectItem*> snakeView;
 
     ViewState _flag_DrawState;
+
+    QColor _clr_border, _clr_back, _clr_tail, _clr_head, _clr_text, _clr_food;
 };
 
 #endif // FIELDGRAPHICSVIEW_H
