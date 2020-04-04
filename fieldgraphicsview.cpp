@@ -175,7 +175,7 @@ void FieldGraphicsView::keyPressEvent(QKeyEvent *event)
             snake->setDirection(Snake::RHT);
             break;
         case Qt::Key::Key_Space:
-            snake->genTail();
+//            snake->genTail();
             break;
         default:
             break;
