@@ -27,7 +27,7 @@ FieldGraphicsView::FieldGraphicsView(QWidget* parent) :
     _delay_key_press = 0;
 
     _game_width = 50;
-    _game_height = 50;
+    _game_height = 30;
 
     _coef_margin = 1.05f;
     _coef_scale = 20.0f;
@@ -35,7 +35,7 @@ FieldGraphicsView::FieldGraphicsView(QWidget* parent) :
 
     /** Create **/
     timer = new QTimer();
-    snake = new Snake(_game_width, _game_height, 9, 0);
+    snake = new Snake(_game_width, _game_height, _game_width/3, _game_height*2/3);
 
     s_PlayArea = new QGraphicsScene();
     rect = new QGraphicsRectItem();

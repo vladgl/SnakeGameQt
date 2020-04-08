@@ -3,11 +3,14 @@
 #include <set>
 #include <QDebug>
 Snake::Snake(uint16_t fw, uint16_t fh, uint16_t x, uint16_t y) :
-    _fw(fw), _fh(fh)
+    _fw(fw), _fh(fh), _init_x(x), _init_y(y)
+
 {
     _count = _fw*_fh;
-    _pos_x.push_back((_fw + x) % _fw);
-    _pos_y.push_back((_fh + y) % _fh);
+    _init_x = (_fw + _init_x) % _fw;
+    _init_y = (_fh + _init_y) % _fh;
+    _pos_x.push_back(_init_x);
+    _pos_y.push_back(_init_y);
     _direction = TOP;
     _flag_GenTail = true;
     _flag_ChangeDir = false;
@@ -18,11 +21,10 @@ Snake::Snake(uint16_t fw, uint16_t fh, uint16_t x, uint16_t y) :
 
 void Snake::resetGame()
 {
-    uint16_t x = _pos_x[0], y = _pos_y[0];
     _pos_x.clear();
     _pos_y.clear();
-    _pos_x.push_back(x);
-    _pos_y.push_back(y);
+    _pos_x.push_back(_init_x);
+    _pos_y.push_back(_init_y);
     _flag_GenTail = true;
     _flag_ChangeDir = false;
     _flag_Win = false;
@@ -105,16 +107,24 @@ bool Snake::nextStep()
     switch(_direction)
     {
     case TOP:
-        _pos_y[0] = (_fh + _pos_y[0] + 1) % _fh;
+        _pos_y[0] = _pos_y[0] + 1;
+        if(_pos_y[0] >= _fh)
+            return false;
         break;
     case BOT:
-        _pos_y[0] = (_fh + _pos_y[0] - 1) % _fh;
+        _pos_y[0] = _pos_y[0] - 1;
+        if(_pos_y[0] < 0)
+            return false;
         break;
     case LFT:
-        _pos_x[0] = (_fw + _pos_x[0] - 1) % _fw;
+        _pos_x[0] = _pos_x[0] - 1;
+        if(_pos_x[0] < 0)
+            return false;
         break;
     case RHT:
-        _pos_x[0] = (_fw + _pos_x[0] + 1) % _fw;
+        _pos_x[0] = _pos_x[0] + 1;
+        if(_pos_x[0] >= _fw)
+            return false;
         break;
     }
 

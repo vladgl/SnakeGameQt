@@ -9,7 +9,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     this->setWindowTitle("Snake");
-    this->resize(500, 500);
+    this->resize(800, 500);
     v_PlayArea = new FieldGraphicsView();
 
     FixedRatioLayout* lout = new FixedRatioLayout();

@@ -80,12 +80,13 @@ public:
     bool checkCollision(uint16_t x, uint16_t y);
 private:
     //!size of the field
-    uint16_t _fw, _fh, _count, _tail_x, _tail_y, _food_x, _food_y;
+    int16_t _fw, _fh, _count, _tail_x, _tail_y, _food_x, _food_y;
+    int16_t _init_x, _init_y;
     //!direction
     Direction _direction, _new_direction;
     //! positions (DOP)
-    std::vector<uint16_t> _pos_x;
-    std::vector<uint16_t> _pos_y;
+    std::vector<int16_t> _pos_x;
+    std::vector<int16_t> _pos_y;
 
     bool _flag_GenTail, _flag_ChangeDir, _flag_Win;
 };
