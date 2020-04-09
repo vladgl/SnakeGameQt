@@ -17,6 +17,8 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+const QString app_setting = "applications";
+
 class FixedRatioLayout : public QVBoxLayout
 {
     Q_OBJECT

@@ -2,8 +2,12 @@
 #include <algorithm>
 #include <set>
 #include <QDebug>
-Snake::Snake(uint16_t fw, uint16_t fh, uint16_t x, uint16_t y) :
-    _fw(fw), _fh(fh), _init_x(x), _init_y(y)
+Snake::Snake(uint16_t fw, uint16_t fh, uint16_t x, uint16_t y,
+             std::vector<int16_t> chanks_x,
+             std::vector<int16_t> chanks_y,
+             std::vector<int16_t> chank_indexes) :
+    _fw(fw), _fh(fh), _init_x(x), _init_y(y),
+    _chank_indexes(chank_indexes), _chanks_x(chanks_x), _chanks_y(chanks_y)
 
 {
     _count = _fw*_fh;
@@ -48,6 +52,14 @@ void Snake::genFood()
                 break;
             }
         }
+        for(size_t i = 0; i<_chanks_x.size(); ++i)
+        {
+            if(_chanks_x[i] == _food_x && _chanks_y[i] == _food_y)
+            {
+                not_in = false;
+                break;
+            }
+        }
         if(not_in)
             return;
     }
@@ -61,9 +73,13 @@ void Snake::genFood()
             empty_space.push_back(Point(i, j));
         }
     }
-    for(uint16_t i = 0; i < _pos_x.size(); ++i)
+    for(size_t i = 0; i < _pos_x.size(); ++i)
     {
         remove_id.insert(_pos_x[i] + _pos_y[i]*_fw);
+    }
+    for(size_t i = 0; i < _chanks_x.size(); ++i)
+    {
+        remove_id.insert(_chanks_x[i] + _chanks_y[i]*_fw);
     }
     for(auto it = remove_id.rbegin(); it != remove_id.rend(); ++it)
     {
@@ -134,6 +150,15 @@ bool Snake::nextStep()
         if(_pos_x[0] == _pos_x[i] && _pos_y[0] == _pos_y[i])
             return false;
     }
+
+
+    for(size_t i = 0; i < _chanks_x.size(); ++i)
+    {
+        if(_pos_x[0] == _chanks_x[i] && _pos_y[0] == _chanks_y[i])
+            return false;
+    }
+
+
 
     //snake ate food
     if(_pos_x[0] == _food_x && _pos_y[0] == _food_y)

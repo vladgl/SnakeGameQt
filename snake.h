@@ -22,7 +22,10 @@ class Snake
 {
 public:
     Snake() = delete;
-    Snake(uint16_t fw, uint16_t fh, uint16_t x, uint16_t y);
+    Snake(uint16_t fw, uint16_t fh, uint16_t x, uint16_t y,
+          std::vector<int16_t> chanks_x = {},
+          std::vector<int16_t> chanks_y = {},
+          std::vector<int16_t> chank_indexes = {});
 
     bool nextStep();
 
@@ -78,6 +81,16 @@ public:
 
     void resetGame();
     bool checkCollision(uint16_t x, uint16_t y);
+
+    size_t sizeChanks()
+    {
+        return _chanks_x.size();
+    }
+
+    Point chankAt(size_t id)
+    {
+        return Point(_chanks_x[id], _chanks_y[id]);
+    }
 private:
     //!size of the field
     int16_t _fw, _fh, _count, _tail_x, _tail_y, _food_x, _food_y;
@@ -87,6 +100,9 @@ private:
     //! positions (DOP)
     std::vector<int16_t> _pos_x;
     std::vector<int16_t> _pos_y;
+
+    std::vector<int16_t> _chank_indexes;
+    std::vector<int16_t> _chanks_x, _chanks_y;
 
     bool _flag_GenTail, _flag_ChangeDir, _flag_Win;
 };

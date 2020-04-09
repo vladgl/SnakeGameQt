@@ -3,6 +3,14 @@
 #include <QGraphicsBlurEffect>
 #include <QGraphicsDropShadowEffect>
 /** Color scheme: https://color.adobe.com/ru/Colorful-Cyberpunk-color-theme-9182945/"*/
+
+
+const std::vector<int16_t> chanks_x = {10, 11, 12, 13, 14, 15, 16, 17, 18,
+                                      40, 40, 40, 40, 40, 40};
+const std::vector<int16_t> chanks_y = {10, 10, 10, 10, 10, 10, 10, 10, 10,
+                                      4, 5, 6, 7, 8, 9};
+
+
 FieldGraphicsView::FieldGraphicsView(QWidget* parent) :
     QGraphicsView(parent)
 {
@@ -35,7 +43,12 @@ FieldGraphicsView::FieldGraphicsView(QWidget* parent) :
 
     /** Create **/
     timer = new QTimer();
-    snake = new Snake(_game_width, _game_height, _game_width/3, _game_height*2/3);
+    snake = new Snake(_game_width,
+                      _game_height,
+                      _game_width/3,
+                      _game_height*2/3,
+                      chanks_x,
+                      chanks_y);
 
     s_PlayArea = new QGraphicsScene();
     rect = new QGraphicsRectItem();
@@ -131,6 +144,15 @@ FieldGraphicsView::FieldGraphicsView(QWidget* parent) :
 
     _coef_margin = (s_PlayArea->height() +
                     itm_score_text->boundingRect().height()*_coef_text_scale*2)/s_PlayArea->height();
+
+    for(size_t i = 0; i < snake->sizeChanks(); ++i)
+    {
+        QGraphicsRectItem* chank = new QGraphicsRectItem();
+        chank->setBrush(QBrush(QColor(_clr_border)));
+        chank->setRect(QRectF(0, 0, _coef_scale, _coef_scale));
+        s_PlayArea->addItem(chank);
+        chank->setPos(snake->chankAt(i).x*_coef_scale, snake->chankAt(i).y*_coef_scale);
+    }
 
     /** Start **/
     _flag_DrawState = GAM;
